@@ -2,13 +2,15 @@
 # source: map_info.proto
 
 import sys
-_b=sys.version_info[0]<3 and (lambda x:x) or (lambda x:x.encode)
 from google.protobuf import descriptor as _descriptor
 from google.protobuf import message as _message
 from google.protobuf import reflection as _reflection
 from google.protobuf import symbol_database as _symbol_database
 
 _sym_db = _symbol_database.Default()
+
+# Fix: Properly encode the serialized_pb as bytes
+_b = lambda x: x.encode('latin1')
 
 DESCRIPTOR = _descriptor.FileDescriptor(
   name='map_info.proto',
@@ -65,6 +67,5 @@ _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 MapInfo = _reflection.GeneratedProtocolMessageType('MapInfo', (_message.Message,), {
   'DESCRIPTOR' : _MAPINFO,
   '__module__' : 'map_info_pb2'
-  # @@protoc_insertion_point(class_scope:crafland.MapInfo)
 })
 _sym_db.RegisterMessage(MapInfo)
