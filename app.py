@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import asyncio
 import time
 import httpx
@@ -8,7 +9,7 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 from cachetools import TTLCache
 from typing import Tuple
-from proto import FreeFire_pb2, main_pb2, AccountPersonalShow_pb2
+from proto import FreeFire_pb2, main_pb2, AccountPersonalShow_pb2, map_info_pb2
 from google.protobuf import json_format, message
 from google.protobuf.message import Message
 from Crypto.Cipher import AES
@@ -20,6 +21,26 @@ MAIN_IV = base64.b64decode('Nm95WkRyMjJFM3ljaGpNJQ==')
 RELEASEVERSION = "OB49"
 USERAGENT = "Dalvik/2.1.0 (Linux; U; Android 13; CPH2095 Build/RKQ1.211119.001)"
 SUPPORTED_REGIONS = {"IND", "BR", "US", "SAC", "NA", "SG", "RU", "ID", "TW", "VN", "TH", "ME", "PK", "CIS", "BD", "EUROPE"}
+
+# Sample map data - replace with your actual data source
+MAP_DATA = {
+    "BERMUDA": {
+        "MapTitle": "Bermuda",
+        "description": "Classic battle royale map with diverse terrain"
+    },
+    "KRAKON": {
+        "MapTitle": "Krakon",
+        "description": "Industrial map with close-quarters combat areas"
+    },
+    "PURGATORY": {
+        "MapTitle": "Purgatory",
+        "description": "Smaller map for fast-paced matches"
+    },
+    "NEXTERA": {
+        "MapTitle": "Nextera",
+        "description": "Futuristic map with high-tech facilities"
+    }
+}
 
 # === Flask App Setup ===
 app = Flask(__name__)
@@ -101,6 +122,21 @@ async def get_token_info(region: str) -> Tuple[str,str,str]:
     info = cached_tokens[region]
     return info['token'], info['region'], info['server_url']
 
+async def GetMapInformation(map_code: str = "BERMUDA"):
+    # Create MapInfo protobuf message
+    map_info = map_info_pb2.MapInfo()
+    
+    # Get data from our sample data (replace with your actual data source)
+    map_data = MAP_DATA.get(map_code.upper(), MAP_DATA["BERMUDA"])
+    
+    # Set the protobuf fields
+    map_info.MapCode = map_code
+    map_info.MapTitle = map_data["MapTitle"]
+    map_info.description = map_data["description"]
+    
+    # Convert to dictionary for JSON response
+    return json_format.MessageToDict(map_info)
+
 async def GetAccountInformation(uid, unk, region, endpoint):
     region = region.upper()
     if region not in SUPPORTED_REGIONS:
@@ -116,6 +152,9 @@ async def GetAccountInformation(uid, unk, region, endpoint):
         resp = await client.post(server+endpoint, data=data_enc, headers=headers)
         proto_response = decode_protobuf(resp.content, AccountPersonalShow_pb2.AccountPersonalShowInfo)
         data = json_format.MessageToDict(proto_response)
+        
+        # Get map information
+        map_info = await GetMapInformation()
         
         # Transform the data into your desired format
         transformed = {
@@ -210,7 +249,9 @@ async def GetAccountInformation(uid, unk, region, endpoint):
                 "language": data.get("socialInfo", {}).get("language"),
                 "modePrefer": data.get("socialInfo", {}).get("modePrefer"),
                 "signature": data.get("socialInfo", {}).get("signature")
-            }
+            },
+            # Add the map information to the response
+            "MapInfo": map_info
         }
         
         return transformed
@@ -235,6 +276,7 @@ def cached_endpoint(ttl=300):
 def get_account_info():
     region = request.args.get('region')
     uid = request.args.get('uid')
+    map_code = request.args.get('map_code', 'BERMUDA')  # Default to Bermuda if not specified
 
     if not uid:
         return jsonify({"error": "Please provide UID."}), 400
@@ -244,6 +286,17 @@ def get_account_info():
     try:
         return_data = asyncio.run(GetAccountInformation(uid, "7", region, "/GetPlayerPersonalShow"))
         return jsonify(return_data), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/map-info')
+@cached_endpoint()
+def get_map_info():
+    map_code = request.args.get('map_code', 'BERMUDA')
+    
+    try:
+        map_data = asyncio.run(GetMapInformation(map_code))
+        return jsonify(map_data), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
