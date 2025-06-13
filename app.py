@@ -24,21 +24,13 @@ SUPPORTED_REGIONS = {"IND", "BR", "US", "SAC", "NA", "SG", "RU", "ID", "TW", "VN
 
 # Sample map data - replace with your actual data source
 MAP_DATA = {
-    "BERMUDA": {
-        "MapTitle": "Bermuda",
-        "description": "Classic battle royale map with diverse terrain"
+    "FREEFIREFEBB4B285F5A973E8975C8FECB32C2B84805": {
+        "MapTitle": "8P_SUPER_CREATOR_MODE",
+        "description": "[B][00FF00][C]YT - RUSHKEY\n[FFFF00]SUBSCRIBE [FFFFFF]AND SUPPORT US FOR MORE MAPS"
     },
-    "KRAKON": {
-        "MapTitle": "Krakon",
-        "description": "Industrial map with close-quarters combat areas"
-    },
-    "PURGATORY": {
-        "MapTitle": "Purgatory",
-        "description": "Smaller map for fast-paced matches"
-    },
-    "NEXTERA": {
-        "MapTitle": "Nextera",
-        "description": "Futuristic map with high-tech facilities"
+    "DEFAULT": {
+        "MapTitle": "DEFAULT_MAP",
+        "description": "Default map description"
     }
 }
 
@@ -122,12 +114,12 @@ async def get_token_info(region: str) -> Tuple[str,str,str]:
     info = cached_tokens[region]
     return info['token'], info['region'], info['server_url']
 
-async def GetMapInformation(map_code: str = "BERMUDA"):
+async def GetMapInformation(map_code: str = "FREEFIREFEBB4B285F5A973E8975C8FECB32C2B84805"):
     # Create MapInfo protobuf message
     map_info = map_info_pb2.MapInfo()
     
     # Get data from our sample data (replace with your actual data source)
-    map_data = MAP_DATA.get(map_code.upper(), MAP_DATA["BERMUDA"])
+    map_data = MAP_DATA.get(map_code.upper(), MAP_DATA["DEFAULT"])
     
     # Set the protobuf fields
     map_info.MapCode = map_code
@@ -157,104 +149,116 @@ async def GetAccountInformation(uid, unk, region, endpoint):
         map_info = await GetMapInformation()
         
         # Transform the data into your desired format
-        transformed = {
-            "AccountInfo": {
-                "AccountID": data.get("basicInfo", {}).get("accountId"),
-                "AccountType": data.get("basicInfo", {}).get("accountType"),
-                "AccountNickname": data.get("basicInfo", {}).get("nickname"),
-                "AccountRegion": data.get("basicInfo", {}).get("region"),
-                "AccountLevel": data.get("basicInfo", {}).get("level"),
-                "AccountEXP": data.get("basicInfo", {}).get("exp"),
-                "AccountBannerID": data.get("basicInfo", {}).get("bannerId"),
-                "AccountHeadPic": data.get("basicInfo", {}).get("headPic"),
-                "AccountRank": data.get("basicInfo", {}).get("rank"),
-                "AccountRankingPoints": data.get("basicInfo", {}).get("rankingPoints"),
-                "AccountRole": data.get("basicInfo", {}).get("role"),
-                "AccountHasElitePass": data.get("basicInfo", {}).get("hasElitePass"),
-                "AccountBadgeCnt": data.get("basicInfo", {}).get("badgeCnt"),
-                "AccountBadgeId": data.get("basicInfo", {}).get("badgeId"),
-                "AccountSeasonId": data.get("basicInfo", {}).get("seasonId"),
-                "AccountLiked": data.get("basicInfo", {}).get("liked"),
-                "AccountLastLoginAt": data.get("basicInfo", {}).get("lastLoginAt"),
-                "CsRank": data.get("basicInfo", {}).get("csRank"),
-                "CsRankingPoints": data.get("basicInfo", {}).get("csRankingPoints"),
-                "MaxRank": data.get("basicInfo", {}).get("maxRank"),
-                "CsMaxRank": data.get("basicInfo", {}).get("csMaxRank"), 
-                "EquippedWeaponSkinShows": data.get("basicInfo", {}).get("weaponSkinShows", []), 
-                "title": data.get("basicInfo", {}).get("title")
+        response = [
+            {
+                "AccountInfo": {
+                    "AccountAvatarId": data.get("profileInfo", {}).get("avatarId", 902048021),
+                    "AccountBPBadges": data.get("basicInfo", {}).get("badgeCnt", 77),
+                    "AccountBPID": data.get("basicInfo", {}).get("badgeId", 1001000085),
+                    "AccountBannerId": data.get("basicInfo", {}).get("bannerId", 901049014),
+                    "AccountCreateTime": data.get("basicInfo", {}).get("createAt", 1554369968),
+                    "AccountEXP": data.get("basicInfo", {}).get("exp", 4819176),
+                    "AccountId": data.get("basicInfo", {}).get("accountId", 868374805),
+                    "AccountLastLogin": data.get("basicInfo", {}).get("lastLoginAt", 1749777499),
+                    "AccountLevel": data.get("basicInfo", {}).get("level", 75),
+                    "AccountLikes": data.get("basicInfo", {}).get("liked", 80695),
+                    "AccountName": data.get("basicInfo", {}).get("nickname", "RUSHKEYㅤ1M"),
+                    "AccountPinId": "Default",
+                    "AccountRegion": data.get("basicInfo", {}).get("region", "IND"),
+                    "AccountSeasonId": data.get("basicInfo", {}).get("seasonId", 45),
+                    "AccountType": data.get("basicInfo", {}).get("accountType", 1),
+                    "BrMaxRank": data.get("basicInfo", {}).get("maxRank", 326),
+                    "BrRankPoint": data.get("basicInfo", {}).get("rankingPoints", 6317),
+                    "CsMaxRank": data.get("basicInfo", {}).get("csMaxRank", 322),
+                    "CsRankPoint": data.get("basicInfo", {}).get("csRankingPoints", 134),
+                    "EquippedWeapon": data.get("basicInfo", {}).get("weaponSkinShows", [907104822, 912048002, 914048001]),
+                    "EvoBadgeAccess": False,
+                    "Iscelebrity": False,
+                    "PrimeLevel": 7,
+                    "ReleaseVersion": data.get("basicInfo", {}).get("releaseVersion", "OB49"),
+                    "ShowBrRank": data.get("basicInfo", {}).get("showBrRank", True),
+                    "ShowCsRank": data.get("basicInfo", {}).get("showCsRank", True),
+                    "Title": data.get("basicInfo", {}).get("title", 904090026),
+                    "hasElitePass": data.get("basicInfo", {}).get("hasElitePass", True)
+                },
+                "AccountProfileInfo": {
+                    "EquippedOutfit": data.get("profileInfo", {}).get("clothes", [203038035, 214048003, 204000181, 211046056, 205043033]),
+                    "EquippedSkills": data.get("profileInfo", {}).get("equipedSkills", [16, 2106, 8, 1, 16, 1206, 8, 2, 16, 6906, 8, 3, 16, 606]),
+                    "characterid": data.get("profileInfo", {}).get("avatarId", 102000007)
+                },
+                "GuildInfo": {
+                    "GuildCapacity": data.get("clanBasicInfo", {}).get("capacity", 40),
+                    "GuildID": data.get("clanBasicInfo", {}).get("clanId", 3040835225),
+                    "GuildLevel": data.get("clanBasicInfo", {}).get("clanLevel", 4),
+                    "GuildMember": data.get("clanBasicInfo", {}).get("memberNum", 7),
+                    "GuildName": data.get("clanBasicInfo", {}).get("clanName", "ᴘʀɪᴛᴜㅤɪsㅤʟɪᴠ"),
+                    "GuildOwner": data.get("clanBasicInfo", {}).get("captainId", 995431726)
+                },
+                "captainBasicInfo": {
+                    "accountId": data.get("clanBasicInfo", {}).get("captainId", 995431726),
+                    "accountType": 1,
+                    "badgeCnt": 61,
+                    "badgeId": 1001000085,
+                    "bannerId": 901000053,
+                    "createAt": 1557795523,
+                    "csMaxRank": 321,
+                    "csRank": 321,
+                    "csRankingPoints": 92,
+                    "exp": 4127840,
+                    "headPic": 902044014,
+                    "lastLoginAt": 1749746133,
+                    "level": 74,
+                    "liked": 33441,
+                    "maxRank": 323,
+                    "nickname": "ᴘʀɪᴛᴜㅤɪsㅤʟɪᴠ",
+                    "pinId": 910045001,
+                    "rank": 323,
+                    "rankingPoints": 4787,
+                    "region": "IND",
+                    "releaseVersion": "OB49",
+                    "seasonId": 45,
+                    "showBrRank": True,
+                    "showCsRank": True,
+                    "title": 904090026
+                },
+                "creditScoreInfo": {
+                    "creditScore": data.get("creditScoreInfo", {}).get("creditScore", 100),
+                    "periodicSummaryEndTime": data.get("creditScoreInfo", {}).get("periodicSummaryEndTime", 1749704085),
+                    "periodicSummaryStartTime": 1749963285,
+                    "rewardState": "REWARD_STATE_INVALID"
+                },
+                "petInfo": {
+                    "exp": data.get("petInfo", {}).get("exp", 6000),
+                    "id": data.get("petInfo", {}).get("id", 1300000117),
+                    "isMarkedStar": False,
+                    "isSelected": data.get("petInfo", {}).get("isSelected", True),
+                    "level": data.get("petInfo", {}).get("level", 7),
+                    "selectedSkillId": data.get("petInfo", {}).get("selectedSkillId", 1315000011),
+                    "skinId": data.get("petInfo", {}).get("skinId", 1310000175)
+                },
+                "socialinfo": {
+                    "AccountLanguage": "CN_TRADITIONAL",
+                    "AccountPreferMode": "CASUAL_MODES",
+                    "AccountPreferRank": "BR_RANKED",
+                    "AccountSignature": "[B][00FFFF]EVOLVED - UNLEASHED - UNDENIABLE",
+                    "ActiveDays": "FLEXIBLE",
+                    "ActiveTime": "NIGHTIME"
+                }
             },
-            "AccountProfileInfo": {
-                "avatarId": data.get("profileInfo", {}).get("avatarId"),
-                "skinColor": data.get("profileInfo", {}).get("skinColor"),
-                "clothes": data.get("profileInfo", {}).get("clothes", []),
-                "equipedSkills": data.get("profileInfo", {}).get("equipedSkills", []),
-                "isSelected": data.get("profileInfo", {}).get("isSelected"),
-                "isSelectedAwaken": data.get("profileInfo", {}).get("isSelectedAwaken"),
-                "clothesTailorEffects": data.get("profileInfo", {}).get("clothesTailorEffects", [])
-            },
-            "createAt": data.get("basicInfo", {}).get("createAt"),
-            "releaseVersion": data.get("basicInfo", {}).get("releaseVersion"),
-            "showBrRank": data.get("basicInfo", {}).get("showBrRank"),
-            "showCsRank": data.get("basicInfo", {}).get("showCsRank"),
-            "socialHighLightsWithBasicInfo": data.get("basicInfo", {}).get("socialHighLightsWithBasicInfo", {}),
-            "captainBasicInfo": {
-                "accountId": data.get("basicInfo", {}).get("accountId"),
-                "accountType": data.get("basicInfo", {}).get("accountType"),
-                "nickname": data.get("basicInfo", {}).get("nickname"),
-                "region": data.get("basicInfo", {}).get("region"),
-                "level": data.get("basicInfo", {}).get("level"),
-                "exp": data.get("basicInfo", {}).get("exp"),
-                "bannerId": data.get("basicInfo", {}).get("bannerId"),
-                "headPic": data.get("basicInfo", {}).get("headPic"),
-                "rank": data.get("basicInfo", {}).get("rank"),
-                "rankingPoints": data.get("basicInfo", {}).get("rankingPoints"),
-                "role": data.get("basicInfo", {}).get("role"),
-                "hasElitePass": data.get("basicInfo", {}).get("hasElitePass"),
-                "badgeCnt": data.get("basicInfo", {}).get("badgeCnt"),
-                "badgeId": data.get("basicInfo", {}).get("badgeId"),
-                "seasonId": data.get("basicInfo", {}).get("seasonId"),
-                "liked": data.get("basicInfo", {}).get("liked"),
-                "lastLoginAt": data.get("basicInfo", {}).get("lastLoginAt"),
-                "csRank": data.get("basicInfo", {}).get("csRank"),
-                "csRankingPoints": data.get("basicInfo", {}).get("csRankingPoints"),
-                "maxRank": data.get("basicInfo", {}).get("maxRank"),
-                "csMaxRank": data.get("basicInfo", {}).get("csMaxRank"), 
-                "weaponSkinShows": data.get("basicInfo", {}).get("weaponSkinShows", []), 
-                "title": data.get("basicInfo", {}).get("title")
-            },
-            "clanBasicInfo": {
-                "clanId": data.get("clanBasicInfo", {}).get("clanId"),
-                "clanName": data.get("clanBasicInfo", {}).get("clanName"),
-                "captainId": data.get("clanBasicInfo", {}).get("captainId"),
-                "clanLevel": data.get("clanBasicInfo", {}).get("clanLevel"),
-                "capacity": data.get("clanBasicInfo", {}).get("capacity"),
-                "memberNum": data.get("clanBasicInfo", {}).get("memberNum")
-            },
-            "creditScoreInfo": {
-                "creditScore": data.get("creditScoreInfo", {}).get("creditScore"),
-                "rewardState": data.get("creditScoreInfo", {}).get("rewardState"),
-                "periodicSummaryEndTime": data.get("creditScoreInfo", {}).get("periodicSummaryEndTime")
-            },
-            "petInfo": {
-                "id": data.get("petInfo", {}).get("id"),
-                "name": data.get("petInfo", {}).get("name"),
-                "level": data.get("petInfo", {}).get("level"),
-                "exp": data.get("petInfo", {}).get("exp"),
-                "isSelected": data.get("petInfo", {}).get("isSelected"),
-                "skinId": data.get("petInfo", {}).get("skinId"),
-                "selectedSkillId": data.get("petInfo", {}).get("selectedSkillId")
-            },
-            "socialInfo": {
-                "accountId": data.get("socialInfo", {}).get("accountId"),
-                "language": data.get("socialInfo", {}).get("language"),
-                "modePrefer": data.get("socialInfo", {}).get("modePrefer"),
-                "signature": data.get("socialInfo", {}).get("signature")
-            },
-            # Add the map information to the response
-            "MapInfo": map_info
-        }
+            {
+                "CraftlandInfo": {
+                    "maps": [
+                        {
+                            "MapCode": map_info.get("MapCode", "#FREEFIREFEBB4B285F5A973E8975C8FECB32C2B84805"),
+                            "MapTitle": map_info.get("MapTitle", "8P_SUPER_CREATOR_MODE"),
+                            "description": map_info.get("description", "[B][00FF00][C]YT - RUSHKEY\n[FFFF00]SUBSCRIBE [FFFFFF]AND SUPPORT US FOR MORE MAPS")
+                        }
+                    ]
+                }
+            }
+        ]
         
-        return transformed
+        return response
 
 # === Caching Decorator ===
 def cached_endpoint(ttl=300):
@@ -276,7 +280,7 @@ def cached_endpoint(ttl=300):
 def get_account_info():
     region = request.args.get('region')
     uid = request.args.get('uid')
-    map_code = request.args.get('map_code', 'BERMUDA')  # Default to Bermuda if not specified
+    map_code = request.args.get('map_code', 'FREEFIREFEBB4B285F5A973E8975C8FECB32C2B84805')
 
     if not uid:
         return jsonify({"error": "Please provide UID."}), 400
@@ -286,17 +290,6 @@ def get_account_info():
     try:
         return_data = asyncio.run(GetAccountInformation(uid, "7", region, "/GetPlayerPersonalShow"))
         return jsonify(return_data), 200
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
-
-@app.route('/map-info')
-@cached_endpoint()
-def get_map_info():
-    map_code = request.args.get('map_code', 'BERMUDA')
-    
-    try:
-        map_data = asyncio.run(GetMapInformation(map_code))
-        return jsonify(map_data), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
