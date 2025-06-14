@@ -94,12 +94,12 @@ async def create_jwt(region: str):
     }
     async with httpx.AsyncClient() as client:
         resp = await client.post(url, data=payload, headers=headers)
-        msg = json.loads(json_format.MessageToJson(decode_protobuf(resp.content, FreeFire_pb2.LoginRes())))
+        msg = json.loads(json_format.MessageToJson(decode_protobuf(resp.content, FreeFire_pb2.LoginRes)))  # Fixed line
         cached_tokens[region] = {
             'token': f"Bearer {msg.get('token','0')}",
             'region': msg.get('lockRegion','0'),
             'server_url': msg.get('serverUrl','0'),
-            'expires_at': time.time() + 25200  # 7 hours
+            'expires_at': time.time() + 25200
         }
 
 async def initialize_tokens():
