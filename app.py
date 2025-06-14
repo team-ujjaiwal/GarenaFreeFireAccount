@@ -8,9 +8,6 @@ from functools import wraps
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from cachetools import TTLCache
-from typing import Tuple
-from google.protobuf import json_format, message
-from google.protobuf.message import Message
 from Crypto.Cipher import AES
 import base64
 
@@ -33,20 +30,11 @@ cached_tokens = defaultdict(dict)
 
 # Helper Functions
 def pad(text: bytes) -> bytes:
-    return text + (AES.block_size - len(text) % AES.block_size * chr(AES.block_size - len(text) % AES.block_size).encode()
+    return text + (AES.block_size - len(text) % AES.block_size) * chr(AES.block_size - len(text) % AES.block_size).encode()
 
 def aes_cbc_encrypt(key: bytes, iv: bytes, plaintext: bytes) -> bytes:
     cipher = AES.new(key, AES.MODE_CBC, iv)
     return cipher.encrypt(pad(plaintext))
-
-def decode_protobuf(encoded_data: bytes, message_type) -> Message:
-    msg = message_type()
-    msg.ParseFromString(encoded_data)
-    return msg
-
-async def json_to_proto(json_data: str, proto_message: Message) -> bytes:
-    json_format.Parse(json_data, proto_message)
-    return proto_message.SerializeToString()
 
 def get_account_credentials(region: str) -> str:
     r = region.upper()
@@ -72,19 +60,14 @@ async def create_jwt(region: str):
         account = get_account_credentials(region)
         token_val, open_id = await get_access_token(account)
         
-        login_req = {
-            "open_id": open_id,
-            "open_id_type": "4",
-            "login_token": token_val,
-            "orign_platform_type": "4"
-        }
+        # Create LoginReq protobuf
+        login_req = AccountPersonalShow_pb2.LoginReq()
+        login_req.open_id = open_id
+        login_req.open_id_type = 4
+        login_req.login_token = token_val
+        login_req.orign_platform_type = 4
         
-        # Initialize protobuf message correctly
-        from proto import FreeFire_pb2
-        login_request = FreeFire_pb2.LoginReq()
-        json_format.ParseDict(login_req, login_request)
-        
-        payload = aes_cbc_encrypt(MAIN_KEY, MAIN_IV, login_request.SerializeToString())
+        payload = aes_cbc_encrypt(MAIN_KEY, MAIN_IV, login_req.SerializeToString())
         
         url = "https://loginbp.ggblueshark.com/MajorLogin"
         headers = {
@@ -97,16 +80,14 @@ async def create_jwt(region: str):
         async with httpx.AsyncClient() as client:
             resp = await client.post(url, data=payload, headers=headers)
             
-            # Correct protobuf decoding
-            from proto import FreeFire_pb2
-            login_res = FreeFire_pb2.LoginRes()
+            # Decode LoginRes protobuf
+            login_res = AccountPersonalShow_pb2.LoginRes()
             login_res.ParseFromString(resp.content)
             
-            msg = json_format.MessageToDict(login_res)
             cached_tokens[region] = {
-                'token': f"Bearer {msg.get('token', '')}",
-                'server_url': msg.get('serverUrl', ''),
-                'expires_at': time.time() + 25200
+                'token': f"Bearer {login_res.token}",
+                'server_url': login_res.serverUrl,
+                'expires_at': time.time() + 25200  # 7 hours
             }
             
     except Exception as e:
@@ -118,7 +99,7 @@ async def initialize_tokens():
 
 async def refresh_tokens_periodically():
     while True:
-        await asyncio.sleep(25200)
+        await asyncio.sleep(25200)  # 7 hours
         await initialize_tokens()
 
 async def get_token_info(region: str) -> Tuple[str, str]:
@@ -129,9 +110,8 @@ async def get_token_info(region: str) -> Tuple[str, str]:
 
 # Data Fetching
 async def fetch_player_data(uid: str, server: str, headers: dict):
-    from proto import main_pb2, AccountPersonalShow_pb2
-    
-    player_req = main_pb2.GetPlayerPersonalShow()
+    # Create GetPlayerPersonalShow protobuf
+    player_req = AccountPersonalShow_pb2.GetPlayerPersonalShow()
     player_req.a = uid
     player_req.b = "7"  # Default value
     
@@ -144,27 +124,30 @@ async def fetch_player_data(uid: str, server: str, headers: dict):
             headers=headers
         )
         
+        # Decode AccountPersonalShowInfo protobuf
         player_info = AccountPersonalShow_pb2.AccountPersonalShowInfo()
         player_info.ParseFromString(resp.content)
         return json_format.MessageToDict(player_info)
 
 async def fetch_map_data(server: str, headers: dict):
-    from proto import AccountPersonalShow_pb2
-    
+    # Create MapRequest protobuf
     map_req = AccountPersonalShow_pb2.MapRequest()
     map_req.map_code = DEFAULT_MAP_CODE
     
     payload = aes_cbc_encrypt(MAIN_KEY, MAIN_IV, map_req.SerializeToString())
     
     async with httpx.AsyncClient() as client:
+        # Make parallel requests for map and craftland info
         map_resp, craftland_resp = await asyncio.gather(
             client.post(f"{server}/GetMapInfo", data=payload, headers=headers),
             client.post(f"{server}/GetCraftlandInfo", data=payload, headers=headers)
         )
         
+        # Decode MapInfo protobuf
         map_info = AccountPersonalShow_pb2.MapInfo()
         map_info.ParseFromString(map_resp.content)
         
+        # Decode CraftlandInfo protobuf
         craftland_info = AccountPersonalShow_pb2.CraftlandInfo()
         craftland_info.ParseFromString(craftland_resp.content)
         
@@ -185,6 +168,7 @@ async def get_account_data(uid: str, region: str):
             'ReleaseVersion': RELEASEVERSION
         }
         
+        # Fetch both player and map data concurrently
         player_data, map_data = await asyncio.gather(
             fetch_player_data(uid, server, headers),
             fetch_map_data(server, headers)
@@ -195,7 +179,8 @@ async def get_account_data(uid: str, region: str):
             "data": {
                 "player_info": player_data,
                 "map_data": map_data
-            }
+            },
+            "timestamp": int(time.time())
         }
         
     except Exception as e:
@@ -226,6 +211,10 @@ async def startup():
     asyncio.create_task(refresh_tokens_periodically())
 
 if __name__ == '__main__':
+    # Import protobuf module after all other imports
+    from proto import AccountPersonalShow_pb2
+    from google.protobuf import json_format
+    
     loop = asyncio.new_event_loop()
     asyncio.set_event_loop(loop)
     loop.run_until_complete(startup())
