@@ -161,15 +161,15 @@ def get_account_info():
         "AccountRegion": raw_data["basicInfo"].get("region", ""),
         "AccountSeasonId": raw_data["basicInfo"].get("seasonId", 0),
         "AccountType": raw_data["basicInfo"].get("accountType", 0),
-        "AvatarImage": f"https://www.dl.cdn.freefireofficial.com/icons/{raw_data['basicInfo'].get('headPic', 0)}.png",
-        "BannerImage": f"https://www.dl.cdn.freefireofficial.com/icons/{raw_data['basicInfo'].get('bannerId', 0)}.png",
+        "AvatarImage": f"https://www.craftland.freefireinfo.site/output/{raw_data['basicInfo'].get('headPic', 0)}.png",
+        "BannerImage": f"https://www.craftland.freefireinfo.site/output/{raw_data['basicInfo'].get('bannerId', 0)}.png",
         "BrMaxRank": raw_data["basicInfo"].get("maxRank", 0),
         "BrRankPoint": raw_data["basicInfo"].get("rankingPoints", 0),
         "CsMaxRank": raw_data["basicInfo"].get("csMaxRank", 0),
         "CsRankPoint": raw_data["basicInfo"].get("csRankingPoints", 0),
         "EquippedWeapon": raw_data["basicInfo"].get("weaponSkinShows", []),
         "EquippedWeaponImages": [
-            f"https://www.dl.cdn.freefireofficial.com/icons/{weapon}.png" 
+            f"https://www.craftland.freefireinfo.site/output/{weapon}.png" 
             for weapon in raw_data["basicInfo"].get("weaponSkinShows", [])
         ],
         "ReleaseVersion": raw_data["basicInfo"].get("releaseVersion", ""),
@@ -183,7 +183,7 @@ def get_account_info():
     "AccountProfileInfo": {
         "EquippedOutfit": raw_data["profileInfo"].get("clothes", []),
         "EquippedOutfitImages": [
-            f"https://www.dl.cdn.freefireofficial.com/icons/{item}.png" 
+            f"https://www.craftland.freefireinfo.site/output/{item}.png" 
             for item in raw_data["profileInfo"].get("clothes", [])
         ],
         "EquippedSkills": raw_data["profileInfo"].get("equipedSkills", [])
