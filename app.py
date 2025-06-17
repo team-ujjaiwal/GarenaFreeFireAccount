@@ -174,7 +174,8 @@ def get_account_info():
                 "Role": raw_data["basicInfo"].get("role", 0),
                 "ShowBrRank": raw_data["basicInfo"].get("showBrRank", False),
                 "ShowCsRank": raw_data["basicInfo"].get("showCsRank", False),
-                "Title": raw_data["basicInfo"].get("title", 0)
+                "Title": raw_data["basicInfo"].get("title", 0), 
+                "HasElitePass": raw_data["basicInfo"].get("hasElitePass", False)
             },
             "AccountProfileInfo": {
                 "EquippedOutfit": raw_data["profileInfo"].get("clothes", []),
