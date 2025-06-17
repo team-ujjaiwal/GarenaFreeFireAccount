@@ -224,7 +224,7 @@ def get_account_info():
                 "creditScoreInfo": {
                     "creditScore": raw_data["creditScoreInfo"].get("creditScore", 0),
                     "periodicSummaryEndTime": raw_data["creditScoreInfo"].get("periodicSummaryEndTime", 0),
-                    "periodicSummaryStartTime": str(data.get("creditScoreInfo", {}).get("periodicSummaryStartTime")), 
+                    "periodicSummaryStartTime": raw_data["creditScoreInfo"].get("periodicSummaryStartTime", 0),
                     "rewardState": 1 if raw_data["creditScoreInfo"].get("rewardState", "") == "REWARD_STATE_UNCLAIMED" else 0
                 },
                 "petInfo": {
