@@ -144,100 +144,97 @@ def get_account_info():
         return jsonify({"error": "Please provide REGION."}), 400
 
     try:
-        # API call
         raw_data = asyncio.run(GetAccountInformation(uid, "7", region, "/GetPlayerPersonalShow"))
         
-        # Transform the response to match your desired format
         transformed_data = {
-                "AccountInfo": {
-                    "AccountAvatarId": raw_data["basicInfo"].get("headPic", 0),
-                    "AccountBPBadges": raw_data["basicInfo"].get("badgeCnt", 0),
-                    "AccountBPID": raw_data["basicInfo"].get("badgeId", 0),
-                    "AccountBannerId": raw_data["basicInfo"].get("bannerId", 0),
-                    "AccountCreateTime": raw_data["basicInfo"].get("createAt", 0),
-                    "AccountEXP": raw_data["basicInfo"].get("exp", 0),
-                    "AccountLastLogin": raw_data["basicInfo"].get("lastLoginAt", 0),
-                    "AccountLevel": raw_data["basicInfo"].get("level", 0),
-                    "AccountLikes": raw_data["basicInfo"].get("liked", 0),
-                    "AccountName": raw_data["basicInfo"].get("nickname", ""),
-                    "AccountRegion": raw_data["basicInfo"].get("region", ""),
-                    "AccountSeasonId": raw_data["basicInfo"].get("seasonId", 0),
-                    "AccountType": raw_data["basicInfo"].get("accountType", 0),
-                    "AvatarImage": f"https://www.dl.cdn.freefireofficial.com/icons/{raw_data['basicInfo'].get('headPic', 0)}.png",
-                    "BannerImage": f"https://www.dl.cdn.freefireofficial.com/icons/{raw_data['basicInfo'].get('bannerId', 0)}.png",
-                    "BrMaxRank": raw_data["basicInfo"].get("maxRank", 0),
-                    "BrRankPoint": raw_data["basicInfo"].get("rankingPoints", 0),
-                    "CsMaxRank": raw_data["basicInfo"].get("csMaxRank", 0),
-                    "CsRankPoint": raw_data["basicInfo"].get("csRankingPoints", 0),
-                    "EquippedWeapon": raw_data["basicInfo"].get("weaponSkinShows", []),
-                    "EquippedWeaponImages": [f"https://www.dl.cdn.freefireofficial.com/icons/{weapon}.png" 
-                                            for weapon in raw_data["basicInfo"].get("weaponSkinShows", [])],
-                    "ReleaseVersion": raw_data["basicInfo"].get("releaseVersion", ""),
-                    "Role": raw_data["basicInfo"].get("role", 0),
-                    "ShowBrRank": raw_data["basicInfo"].get("showBrRank", False),
-                    "ShowCsRank": raw_data["basicInfo"].get("showCsRank", False),
-                    "Title": raw_data["basicInfo"].get("title", 0)
-                },
-                "AccountProfileInfo": {
-                    "EquippedOutfit": raw_data["profileInfo"].get("clothes", []),
-                    "EquippedOutfitImages": [f"https://www.dl.cdn.freefireofficial.com/icons/{item}.png" 
-                                           for item in raw_data["profileInfo"].get("clothes", [])],
-                    "EquippedSkills": raw_data["profileInfo"].get("equipedSkills", [])
-                },
-                "GuildInfo": {
-                    "GuildCapacity": raw_data["clanBasicInfo"].get("capacity", 0),
-                    "GuildID": raw_data["clanBasicInfo"].get("clanId", ""),
-                    "GuildLevel": raw_data["clanBasicInfo"].get("clanLevel", 0),
-                    "GuildMember": raw_data["clanBasicInfo"].get("memberNum", 0),
-                    "GuildName": raw_data["clanBasicInfo"].get("clanName", ""),
-                    "GuildOwner": raw_data["clanBasicInfo"].get("captainId", "")
-                },
-                "captainBasicInfo": {
-                    "EquippedWeapon": raw_data["basicInfo"].get("weaponSkinShows", []),
-                    "accountId": raw_data["basicInfo"].get("accountId", ""),
-                    "accountType": raw_data["basicInfo"].get("accountType", 0),
-                    "badgeCnt": raw_data["basicInfo"].get("badgeCnt", 0),
-                    "badgeId": raw_data["basicInfo"].get("badgeId", 0),
-                    "bannerId": raw_data["basicInfo"].get("bannerId", 0),
-                    "createAt": raw_data["basicInfo"].get("createAt", 0),
-                    "csMaxRank": raw_data["basicInfo"].get("csMaxRank", 0),
-                    "csRank": raw_data["basicInfo"].get("csRank", 0),
-                    "csRankingPoints": raw_data["basicInfo"].get("csRankingPoints", 0),
-                    "exp": raw_data["basicInfo"].get("exp", 0),
-                    "headPic": raw_data["basicInfo"].get("headPic", 0),
-                    "lastLoginAt": raw_data["basicInfo"].get("lastLoginAt", 0),
-                    "level": raw_data["basicInfo"].get("level", 0),
-                    "liked": raw_data["basicInfo"].get("liked", 0),
-                    "maxRank": raw_data["basicInfo"].get("maxRank", 0),
-                    "nickname": raw_data["basicInfo"].get("nickname", ""),
-                    "rank": raw_data["basicInfo"].get("rank", 0),
-                    "rankingPoints": raw_data["basicInfo"].get("rankingPoints", 0),
-                    "region": raw_data["basicInfo"].get("region", ""),
-                    "releaseVersion": raw_data["basicInfo"].get("releaseVersion", ""),
-                    "seasonId": raw_data["basicInfo"].get("seasonId", 0),
-                    "showBrRank": raw_data["basicInfo"].get("showBrRank", False),
-                    "showCsRank": raw_data["basicInfo"].get("showCsRank", False),
-                    "title": raw_data["basicInfo"].get("title", 0)
-                },
-                "creditScoreInfo": {
-                    "creditScore": raw_data["creditScoreInfo"].get("creditScore", 0),
-                    "periodicSummaryEndTime": raw_data["creditScoreInfo"].get("periodicSummaryEndTime", 0),
-                    "rewardState": 1 if raw_data["creditScoreInfo"].get("rewardState", "") == "REWARD_STATE_UNCLAIMED" else 0
-                },
-                "petInfo": {
-                    "exp": raw_data["petInfo"].get("exp", 0),
-                    "id": raw_data["petInfo"].get("id", 0),
-                    "isSelected": raw_data["petInfo"].get("isSelected", False),
-                    "level": raw_data["petInfo"].get("level", 0),
-                    "name": raw_data["petInfo"].get("name", ""),
-                    "selectedSkillId": raw_data["petInfo"].get("selectedSkillId", 0),
-                    "skinId": raw_data["petInfo"].get("skinId", 0)
-                },
-                "socialinfo": {
-                    "AccountLanguage": raw_data["socialInfo"].get("language", "").replace("Language_", ""),
-                    "AccountPreferMode": raw_data["socialInfo"].get("modePrefer", "").replace("ModePrefer_", ""),
-                    "AccountSignature": raw_data["socialInfo"].get("signature", "")
-                }
+            "AccountInfo": {
+                "AccountAvatarId": raw_data["basicInfo"].get("headPic", 0),
+                "AccountBPBadges": raw_data["basicInfo"].get("badgeCnt", 0),
+                "AccountBPID": raw_data["basicInfo"].get("badgeId", 0),
+                "AccountBannerId": raw_data["basicInfo"].get("bannerId", 0),
+                "AccountCreateTime": raw_data["basicInfo"].get("createAt", 0),
+                "AccountEXP": raw_data["basicInfo"].get("exp", 0),
+                "AccountLastLogin": raw_data["basicInfo"].get("lastLoginAt", 0),
+                "AccountLevel": raw_data["basicInfo"].get("level", 0),
+                "AccountLikes": raw_data["basicInfo"].get("liked", 0),
+                "AccountName": raw_data["basicInfo"].get("nickname", ""),
+                "AccountRegion": raw_data["basicInfo"].get("region", ""),
+                "AccountSeasonId": raw_data["basicInfo"].get("seasonId", 0),
+                "AccountType": raw_data["basicInfo"].get("accountType", 0),
+                "AvatarImage": f"https://www.dl.cdn.freefireofficial.com/icons/{raw_data['basicInfo'].get('headPic', 0)}.png",
+                "BannerImage": f"https://www.dl.cdn.freefireofficial.com/icons/{raw_data['basicInfo'].get('bannerId', 0)}.png",
+                "BrMaxRank": raw_data["basicInfo"].get("maxRank", 0),
+                "BrRankPoint": raw_data["basicInfo"].get("rankingPoints", 0),
+                "CsMaxRank": raw_data["basicInfo"].get("csMaxRank", 0),
+                "CsRankPoint": raw_data["basicInfo"].get("csRankingPoints", 0),
+                "EquippedWeapon": raw_data["basicInfo"].get("weaponSkinShows", []),
+                "EquippedWeaponImages": [f"https://www.dl.cdn.freefireofficial.com/icons/{weapon}.png" 
+                                        for weapon in raw_data["basicInfo"].get("weaponSkinShows", [])],
+                "ReleaseVersion": raw_data["basicInfo"].get("releaseVersion", ""),
+                "Role": raw_data["basicInfo"].get("role", 0),
+                "ShowBrRank": raw_data["basicInfo"].get("showBrRank", False),
+                "ShowCsRank": raw_data["basicInfo"].get("showCsRank", False),
+                "Title": raw_data["basicInfo"].get("title", 0)
+            },
+            "AccountProfileInfo": {
+                "EquippedOutfit": raw_data["profileInfo"].get("clothes", []),
+                "EquippedOutfitImages": [f"https://www.dl.cdn.freefireofficial.com/icons/{item}.png" 
+                                       for item in raw_data["profileInfo"].get("clothes", [])],
+                "EquippedSkills": raw_data["profileInfo"].get("equipedSkills", [])
+            },
+            "GuildInfo": {
+                "GuildCapacity": raw_data["clanBasicInfo"].get("capacity", 0),
+                "GuildID": raw_data["clanBasicInfo"].get("clanId", ""),
+                "GuildLevel": raw_data["clanBasicInfo"].get("clanLevel", 0),
+                "GuildMember": raw_data["clanBasicInfo"].get("memberNum", 0),
+                "GuildName": raw_data["clanBasicInfo"].get("clanName", ""),
+                "GuildOwner": raw_data["clanBasicInfo"].get("captainId", "")
+            },
+            "captainBasicInfo": {
+                "EquippedWeapon": raw_data["basicInfo"].get("weaponSkinShows", []),
+                "accountId": raw_data["basicInfo"].get("accountId", ""),
+                "accountType": raw_data["basicInfo"].get("accountType", 0),
+                "badgeCnt": raw_data["basicInfo"].get("badgeCnt", 0),
+                "badgeId": raw_data["basicInfo"].get("badgeId", 0),
+                "bannerId": raw_data["basicInfo"].get("bannerId", 0),
+                "createAt": raw_data["basicInfo"].get("createAt", 0),
+                "csMaxRank": raw_data["basicInfo"].get("csMaxRank", 0),
+                "csRank": raw_data["basicInfo"].get("csRank", 0),
+                "csRankingPoints": raw_data["basicInfo"].get("csRankingPoints", 0),
+                "exp": raw_data["basicInfo"].get("exp", 0),
+                "headPic": raw_data["basicInfo"].get("headPic", 0),
+                "lastLoginAt": raw_data["basicInfo"].get("lastLoginAt", 0),
+                "level": raw_data["basicInfo"].get("level", 0),
+                "liked": raw_data["basicInfo"].get("liked", 0),
+                "maxRank": raw_data["basicInfo"].get("maxRank", 0),
+                "nickname": raw_data["basicInfo"].get("nickname", ""),
+                "rank": raw_data["basicInfo"].get("rank", 0),
+                "rankingPoints": raw_data["basicInfo"].get("rankingPoints", 0),
+                "region": raw_data["basicInfo"].get("region", ""),
+                "releaseVersion": raw_data["basicInfo"].get("releaseVersion", ""),
+                "seasonId": raw_data["basicInfo"].get("seasonId", 0),
+                "showBrRank": raw_data["basicInfo"].get("showBrRank", False),
+                "showCsRank": raw_data["basicInfo"].get("showCsRank", False),
+                "title": raw_data["basicInfo"].get("title", 0)
+            },
+            "creditScoreInfo": {
+                "creditScore": raw_data["creditScoreInfo"].get("creditScore", 0),
+                "periodicSummaryEndTime": raw_data["creditScoreInfo"].get("periodicSummaryEndTime", 0),
+                "rewardState": 1 if raw_data["creditScoreInfo"].get("rewardState", "") == "REWARD_STATE_UNCLAIMED" else 0
+            },
+            "petInfo": {
+                "exp": raw_data["petInfo"].get("exp", 0),
+                "id": raw_data["petInfo"].get("id", 0),
+                "isSelected": raw_data["petInfo"].get("isSelected", False),
+                "level": raw_data["petInfo"].get("level", 0),
+                "name": raw_data["petInfo"].get("name", ""),
+                "selectedSkillId": raw_data["petInfo"].get("selectedSkillId", 0),
+                "skinId": raw_data["petInfo"].get("skinId", 0)
+            },
+            "socialinfo": {
+                "AccountLanguage": raw_data["socialInfo"].get("language", "").replace("Language_", ""),
+                "AccountPreferMode": raw_data["socialInfo"].get("modePrefer", "").replace("ModePrefer_", ""),
+                "AccountSignature": raw_data["socialInfo"].get("signature", "")
             }
         }
 
