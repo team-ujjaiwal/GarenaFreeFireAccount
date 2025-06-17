@@ -149,8 +149,6 @@ def get_account_info():
         
         # Transform the response to match your desired format
         transformed_data = {
-            "credit": "Ujjaiwal",
-            "data": {
                 "AccountInfo": {
                     "AccountAvatarId": raw_data["basicInfo"].get("headPic", 0),
                     "AccountBPBadges": raw_data["basicInfo"].get("badgeCnt", 0),
@@ -224,7 +222,6 @@ def get_account_info():
                 "creditScoreInfo": {
                     "creditScore": raw_data["creditScoreInfo"].get("creditScore", 0),
                     "periodicSummaryEndTime": raw_data["creditScoreInfo"].get("periodicSummaryEndTime", 0),
-                    "periodicSummaryStartTime": raw_data["creditScoreInfo"].get("periodicSummaryStartTime", 0),
                     "rewardState": 1 if raw_data["creditScoreInfo"].get("rewardState", "") == "REWARD_STATE_UNCLAIMED" else 0
                 },
                 "petInfo": {
